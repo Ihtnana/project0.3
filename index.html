@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Client</title>
+</head>
+<body>
+    <h1>Users List</h1>
+    <ul id="user-list"></ul>
+
+    <h2>Add New User</h2>
+    <form id="add-user-form">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <button type="submit">Add User</button>
+    </form>
+
+    <script>
+        // Fetch users from the server
+        const fetchUsers = async () => {
+            const response = await fetch('http://localhost:3001/api/users');
+            const users = await response.json();
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';  
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = `${user.name} - ${user.email}`;
+                userList.appendChild(li);
+            });
+        };
+
+        
+        const addUserForm = document.getElementById('add-user-form');
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            const newUser = { name, email };
+
+            const response = await fetch('http://localhost:3001/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newUser),
+            });
+
+            if (response.ok) {
+                fetchUsers();  
+            }
+        });
+
+        
+        fetchUsers();
+    </script>
+</body>
+</html>
